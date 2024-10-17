@@ -1,0 +1,13 @@
+[project]
+name = "horiba_raman_ccoverstreet"
+version = "0.0.1"
+authors = [
+	{ name="Cale Overstreet" }
+]
+description = "Package for processing Horiba LabRAM HR data"
+readme = "README.md"
+requires-python = ">3.8"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
