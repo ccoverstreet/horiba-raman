@@ -7,6 +7,10 @@ authors = [
 description = "Package for processing Horiba LabRAM HR data"
 readme = "README.md"
 requires-python = ">3.8"
+dependencies = [
+	"PIL",
+	"numpy"
+]
 
 [build-system]
 requires = ["setuptools>=61.0"]
