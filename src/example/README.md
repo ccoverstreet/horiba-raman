@@ -4,3 +4,5 @@
 - Using short, 3 second measurements at 10% ND filter with 473 nm wavelength
     - Both samples have fairly strong Raman signal
 
+![Figure 1](Raman_mapping_postprocessing_demo.png)
+
