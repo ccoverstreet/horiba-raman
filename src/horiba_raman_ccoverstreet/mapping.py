@@ -29,8 +29,6 @@ def parse_image_txt(filename):
                 vals.append([float(x) for x in split[1:]])
                 
 
-        print(len(x), len(vals[0]))
-        print(y)
 
     return np.flip(np.array(x)), np.flip(np.array(y)), np.flip(np.array(vals))
 
@@ -47,9 +45,7 @@ def parse_image_comb(bmp_filename, txt_filename):
     - extent: Extents for use with matplotlib.pyplot.imshow"""
 
     x, y, gray = parse_image_txt(txt_filename)
-    print(x)
 
-    print(x[0], x[-1])
     extent = (x[0], x[-1], y[-1], y[0])
     
     img = Image.open(bmp_filename)
@@ -124,9 +120,24 @@ def determine_rectangular_map_dim(pos):
 
         
 
-def extract_max_from_range(x, y, x_min, x_max):
+def extract_max_from_range(x, y, x_min, x_max, normalize=False):
+    """Returns maximum y-value from a given x-range
+
+    Useful for phase mapping where Raman intensity from a certain spectral
+    region can be overlayed onto a microscope image
+
+    Params:
+    - x: x-values
+    - y: y-values
+    - x_min: lower x-bound for max search
+    - x_max: upper x-bound for max search
+    - normalize: Optional argument to normal the maximum value to the maximum of the spectra
+    """
     start = np.argmax(x > x_min)
     end = np.argmax(x > x_max)
+
+    if normalize:
+        return np.max(y[start:end]) / np.max(y)
 
     return np.max(y[start:end])
 
