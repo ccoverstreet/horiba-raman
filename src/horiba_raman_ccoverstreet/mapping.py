@@ -183,7 +183,7 @@ def extract_extent_from_pos_rect(pos, dim):
 
     return (x_min - dx / 2, x_max + dx/2, y_min + dy/2, y_max - dy/2)
 
-def quickplot_rect_map(l6m_text, img_bmp, img_txt, shift_min, shift_max, normalize=False):
+def quickplot_rect_map(l6m_txt, img_bmp, img_txt, shift_min, shift_max, normalize=False):
     """Creates a quick matplotlib figure heatmap using provided shift_min and shift_max
 
     Params:
