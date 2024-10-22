@@ -1,6 +1,7 @@
 import numpy as np
 import os
 from PIL import Image
+import matplotlib.pyplot as plt
 
 def parse_image_txt(filename):
     """Parses the gray-scale image saved in .txt format as saved from the "Video" tab in LabSpec6
@@ -141,6 +142,27 @@ def extract_max_from_range(x, y, x_min, x_max, normalize=False):
 
     return np.max(y[start:end])
 
+def extract_maxes_from_range(shift, counts, shift_min, shift_max, normalize=False):
+    """Returns all maxes for a given Raman shift range. Wrapper function for extract_max_from_range
+    
+    Params:
+    - shift: Raman shift array
+    - counts: 2D array of count data for map spectra
+    - shift_min: lower bound for Raman shift
+    - shift_max: upper bound for Raman shift
+    - normalize: Optional argument to normalize extracted max value to the maximum of the spectrum
+
+    Returns:
+    - Array of extracted maximums"""
+
+    maxes = []
+    for c in counts:
+        m = extract_max_from_range(shift, c, shift_min, shift_max)
+        maxes.append(m)
+
+    return np.array(maxes)
+
+
 def extract_extent_from_pos_rect(pos, dim):
     """Extracts the extents from a given set of positions assuming rectangular grid
 
@@ -160,4 +182,33 @@ def extract_extent_from_pos_rect(pos, dim):
     dy = np.abs(pos[0][1] - pos[dim[1]][1])
 
     return (x_min - dx / 2, x_max + dx/2, y_min + dy/2, y_max - dy/2)
+
+def quickplot_rect_map(l6m_text, img_bmp, img_txt, shift_min, shift_max, normalize=False):
+    """Creates a quick matplotlib figure heatmap using provided shift_min and shift_max
+
+    Params:
+    - l6m_text: text version of the LabSpec6 map file
+    - img_bmp: bitmap image of the camera view
+    - img_txt: text version of the camera view
+    - shift_min: minimum Raman shift (left bound) for finding maximum
+    - shift_max: maximum Raman shift (right bound) for finding maximum
+    - normalize: should max value extracted be normalized to maximum of spectrum?"""
+
+    img, extent_camera = parse_image_comb("Gd2O3_AlN_map.bmp", "Gd2O3_AlN_map.txt")
+    shift, pos, counts = parse_data_txt("Gd2O3_AlN_map_data.txt")
+    dim = determine_rectangular_map_dim(pos)
+    extent = extract_extent_from_pos_rect(pos, dim)
+
+    maxes = np.reshape(extract_maxes_from_range(shift, counts, shift_min, shift_max),
+                       dim)
+
+    plt.figure()
+
+    plt.imshow(img, extent=extent_camera)
+    plt.imshow(maxes, extent=extent, alpha=0.5)
+    plt.xlim(extent_camera[0], extent_camera[1])
+    plt.ylim(extent_camera[2], extent_camera[3])
+    plt.xlabel(r"X [$\mu$m]", fontsize=16)
+    plt.ylabel(r"Y [$\mu$m]", fontsize=16)
+    plt.show()
 
