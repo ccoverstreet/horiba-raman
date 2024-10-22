@@ -194,8 +194,8 @@ def quickplot_rect_map(l6m_text, img_bmp, img_txt, shift_min, shift_max, normali
     - shift_max: maximum Raman shift (right bound) for finding maximum
     - normalize: should max value extracted be normalized to maximum of spectrum?"""
 
-    img, extent_camera = parse_image_comb("Gd2O3_AlN_map.bmp", "Gd2O3_AlN_map.txt")
-    shift, pos, counts = parse_data_txt("Gd2O3_AlN_map_data.txt")
+    img, extent_camera = parse_image_comb(img_bmp, img_txt)
+    shift, pos, counts = parse_data_txt(l6m_txt)
     dim = determine_rectangular_map_dim(pos)
     extent = extract_extent_from_pos_rect(pos, dim)
 
