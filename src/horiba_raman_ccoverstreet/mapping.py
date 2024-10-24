@@ -73,8 +73,8 @@ def parse_image_comb(bmp_filename, txt_filename):
 class RamanMapData:
     """Holds spectral data with positions, rotations, and extent"""
     shift: np.array # 1D array of Raman shift values
-    pos: list[np.array] # list of 2-element arrays (x, y)
-    counts: list[np.array] # list of 1D arrays of Raman intensity/count data
+    pos: np.array # 2 column array of x and y positions
+    counts: np.array # 2D array where each row is the counts for a given spectra
     dim: np.array # (rows,columns) of map dimension
     center: np.array # (x,y) of center of map
     rotation: float # rotation in degrees
@@ -202,7 +202,11 @@ def extract_maxes_from_range(shift, counts, shift_min, shift_max, normalize=Fals
         start = np.argmax(shift > shift_min)
         end = np.argmax(shift > shift_max)
         m = np.max(c[start:end])
-        maxes.append(m)
+        if normalize:
+            maxes.append(m / np.max(c))
+        else:
+            maxes.append(m)
+
 
     return np.array(maxes)
 
