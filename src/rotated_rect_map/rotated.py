@@ -12,11 +12,12 @@ maxes = np.reshape(mapping.extract_maxes_from_range(raman_map.shift, raman_map.c
                                          normalize=True), raman_map.dim)
 
 
-# Use negative rotation since imshow rotate is flipped
-rotation = transforms.Affine2D().rotate_deg(-raman_map.rotation)
+# Move map to center and then rotate
+# Use negative rotation since imshow rotate is stage was flipped in this measurement
+rotation = transforms.Affine2D().translate(*-raman_map.center).rotate_deg(-raman_map.rotation).translate(*raman_map.center)
 plt.imshow(raman_img.img, extent=raman_img.extent)
 plt.imshow(maxes, extent=raman_map.extent, transform=rotation+plt.gca().transData,
-           interpolation="none", alpha=0.5)
+           interpolation="bilinear", alpha=0.5)
 plt.xlim(raman_img.extent[0], raman_img.extent[1])
 plt.ylim(raman_img.extent[2], raman_img.extent[3])
 plt.savefig("rotated.png")

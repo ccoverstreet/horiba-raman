@@ -7,7 +7,7 @@ from PIL import Image
 @dataclass
 class RamanImage:
     img: Image # PIL Image used for matplotlib imshow
-    extent: list # extent for matplotlib imshow
+    extent: np.array # extent for matplotlib imshow
 
 def parse_image_txt(filename):
     """Parses the gray-scale image saved in .txt format as saved from the "Video" tab in LabSpec6
@@ -67,7 +67,7 @@ def parse_image_comb(bmp_filename, txt_filename):
     
     img = Image.open(bmp_filename)
 
-    return RamanImage(img, extent)
+    return RamanImage(img, np.array(extent))
 
 @dataclass
 class RamanMapData:
@@ -78,7 +78,7 @@ class RamanMapData:
     dim: np.array # (rows,columns) of map dimension
     center: np.array # (x,y) of center of map
     rotation: float # rotation in degrees
-    extent: list # extents used for matplotlib imshow
+    extent: np.array # extents used for matplotlib imshow
 
 
 def parse_l6m_txt(filename):
@@ -121,6 +121,8 @@ def parse_l6m_txt(filename):
             start_x = pos[0][0]
             start_y = pos[0][1]
 
+        pos = np.array(pos)
+
         dim = determine_dim_from_pos(pos)
 
         start_pos = np.array([start_x, start_y])
@@ -129,16 +131,12 @@ def parse_l6m_txt(filename):
         start_pos_off = start_pos - center
         grid_pos_off = pos[0] - center
 
-        print(pos)
-        print(start_pos)
 
         dot = np.dot(start_pos_off, grid_pos_off)
         theta = np.arccos(dot / (np.linalg.norm(start_pos_off) * np.linalg.norm(grid_pos_off)))
-        print(theta, np.degrees(theta))
 
         dx = np.abs(pos[0][0] - pos[1][0])
         dy = np.abs(pos[0][1] - pos[dim[1]][1])
-        print(dx, dy)
 
         left = pos[0][0] - dx /  2
         right = pos[-1][0] + dx / 2
@@ -147,7 +145,7 @@ def parse_l6m_txt(filename):
 
 
 
-        return RamanMapData(shift, pos, counts, dim, center, np.degrees(theta), (left, right, bottom, top))
+        return RamanMapData(shift, pos, counts, dim, center, np.degrees(theta), np.array((left, right, bottom, top)))
 
 
 def determine_dim_from_pos(pos):
@@ -166,14 +164,11 @@ def determine_dim_from_pos(pos):
     n_cols = 0
     cur_y = pos[0][1]
     for p in pos:
-        print(p)
         if p[1] != cur_y:
             break
 
         n_cols += 1
 
-    print(len(pos))
-    print(n_cols)
     return np.array([len(pos) // n_cols, n_cols])
 
 def extract_maxes_from_range(shift, counts, shift_min, shift_max, normalize=False):
